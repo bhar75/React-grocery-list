@@ -7,10 +7,20 @@ function App() {
   const [list, setList] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editID, setEditID] = useState(null);
-  const [alert, setAlerg] = useState({ show: false, msg: "", type: "" });
+  const [alert, setAlert] = useState({ show: false, msg: "", type: "" });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!name) {
+      //check for empty value and set alert
+    } else if (name && isEditing) {
+      //check isEditing is true and deal with edit
+    } else {
+      const newItem = { id: new Date().getTime().toString(), title: name };
+      setList([...list, newItem]);
+      setName("");
+    }
     console.log("form");
   };
 
@@ -32,10 +42,12 @@ function App() {
           </button>
         </div>
       </form>
-      <div className="grocery-container">
-        <List />
-        <button className="clear-btn">clear items</button>
-      </div>
+      {list.length > 0 && (
+        <div className="grocery-container">
+          <List items={list} />
+          <button className="clear-btn">clear items</button>
+        </div>
+      )}
     </section>
   );
 }
