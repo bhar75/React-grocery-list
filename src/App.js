@@ -17,10 +17,24 @@ function App() {
     e.preventDefault();
 
     if (!name) {
-      showAlert(true, "empty list", "danger");
+      showAlert(true, "pls add an item", "danger");
     } else if (name && isEditing) {
       //check isEditing is true and deal with edit
+      setList(
+        list.map((item) => {
+          if (item.id === editID) {
+            return { ...item, title: name };
+          }
+
+          return item;
+        })
+      );
+      setName("");
+      setEditID(null);
+      setIsEditing(false);
+      showAlert(true, "value changed", "success");
     } else {
+      showAlert(true, "item added successfully", "success");
       const newItem = { id: new Date().getTime().toString(), title: name };
       setList([...list, newItem]);
       setName("");
@@ -32,10 +46,27 @@ function App() {
     setAlert({ show: show, msg: msg, type: type });
   };
 
+  const clearList = () => {
+    showAlert(true, "list cleared successfully", "danger");
+    setList([]);
+  };
+
+  const removeItem = (id) => {
+    showAlert(true, "item removed successfully", "danger");
+    setList(list.filter((item) => item.id !== id));
+  };
+
+  const editItem = (id) => {
+    const specificItem = list.find((item) => item.id === id);
+    setIsEditing(true);
+    setEditID(id);
+    setName(specificItem.title);
+  };
+
   return (
     <section className="section-center">
       <form className="grocery-form" onSubmit={handleSubmit}>
-        {alert.show && <Alert {...alert} removeAlert={showAlert} />}
+        {alert.show && <Alert {...alert} removeAlert={showAlert} list={list} />}
         <h3>Grocery bud</h3>
         <div className="form-control">
           <input
@@ -52,8 +83,10 @@ function App() {
       </form>
       {list.length > 0 && (
         <div className="grocery-container">
-          <List items={list} />
-          <button className="clear-btn">clear items</button>
+          <List items={list} removeItem={removeItem} editItem={editItem} />
+          <button className="clear-btn" onClick={clearList}>
+            clear items
+          </button>
         </div>
       )}
     </section>
